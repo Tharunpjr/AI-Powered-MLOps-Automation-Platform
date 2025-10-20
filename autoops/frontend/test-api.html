@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>AutoOps API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8002';
+        const results = document.getElementById('results');
+        
+        async function testAPI() {
+            results.innerHTML = '<p>Testing API...</p>';
+            
+            try {
+                // Test health
+                const healthResponse = await fetch(`${API_BASE}/health`);
+                const healthData = await healthResponse.json();
+                results.innerHTML += `<p>✅ Health: ${healthData.status}</p>`;
+                
+                // Test prediction
+                const predResponse = await fetch(`${API_BASE}/api/v1/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ features: [5.1, 3.5, 1.4, 0.2] })
+                });
+                const predData = await predResponse.json();
+                results.innerHTML += `<p>✅ Prediction: ${predData.prediction}</p>`;
+                
+                // Test chat
+                const chatResponse = await fetch(`${API_BASE}/api/v1/llm/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: "Hello!", 
+                        session_id: "test-session",
+                        conversation_history: []
+                    })
+                });
+                const chatData = await chatResponse.json();
+                results.innerHTML += `<p>✅ Chat: ${chatData.result.substring(0, 50)}...</p>`;
+                
+            } catch (error) {
+                results.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run test on load
+        testAPI();
+    </script>
+</body>
+</html>

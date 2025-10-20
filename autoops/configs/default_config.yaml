@@ -1,0 +1,185 @@
+# AutoOps Default Configuration
+# Configuration file for AutoOps MLOps automation toolkit
+
+# Application settings
+app:
+  name: "AutoOps"
+  version: "1.0.0"
+  environment: "development"
+  debug: true
+
+# Model service configuration
+model_service:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+  reload: true
+  log_level: "INFO"
+  
+  # Model settings
+  model:
+    path: "models/model.pkl"
+    version: "v1.0.0"
+    type: "random_forest"
+    features_expected: 4
+  
+  # Health check settings
+  health:
+    enabled: true
+    path: "/health"
+    timeout: 30
+  
+  # Metrics settings
+  metrics:
+    enabled: true
+    path: "/metrics"
+    port: 8000
+
+# Training configuration
+training:
+  # Data settings
+  data:
+    path: "examples/sample_data/small_dataset.csv"
+    test_size: 0.2
+    random_state: 42
+  
+  # Model settings
+  model:
+    type: "random_forest"
+    params:
+      n_estimators: 100
+      max_depth: 10
+      random_state: 42
+  
+  # Output settings
+  output:
+    directory: "models/"
+    format: "pkl"
+    metadata: true
+
+# Infrastructure configuration
+infrastructure:
+  # Kubernetes settings
+  kubernetes:
+    namespace: "autoops"
+    context: ""
+    config_path: ""
+  
+  # Docker settings
+  docker:
+    registry: ""
+    image_name: "autoops/model-service"
+    tag: "latest"
+    build_context: "services/model_service"
+  
+  # Monitoring settings
+  monitoring:
+    prometheus:
+      enabled: true
+      port: 9090
+      path: "/metrics"
+    
+    grafana:
+      enabled: true
+      port: 3000
+      admin_password: "admin"
+
+# CI/CD configuration
+cicd:
+  # GitHub Actions settings
+  github_actions:
+    enabled: true
+    workflow_file: ".github/workflows/ci-cd.yml"
+  
+  # Build settings
+  build:
+    dockerfile: "services/model_service/Dockerfile"
+    context: "services/model_service"
+    target: "production"
+  
+  # Deploy settings
+  deploy:
+    environments:
+      - name: "development"
+        namespace: "autoops-dev"
+        replicas: 1
+      
+      - name: "staging"
+        namespace: "autoops-staging"
+        replicas: 2
+      
+      - name: "production"
+        namespace: "autoops"
+        replicas: 3
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "json"
+  handlers:
+    - type: "console"
+      level: "INFO"
+    
+    - type: "file"
+      level: "DEBUG"
+      filename: "logs/autoops.log"
+      max_size: "10MB"
+      backup_count: 5
+
+# Security configuration
+security:
+  # CORS settings
+  cors:
+    allow_origins: ["*"]
+    allow_credentials: true
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+  
+  # Authentication (placeholder)
+  auth:
+    enabled: false
+    type: "none"
+  
+  # Secrets management
+  secrets:
+    provider: "env"  # env, vault, aws-secrets-manager
+    prefix: "AUTOOPS_"
+
+# Development settings
+development:
+  # Hot reload settings
+  hot_reload: true
+  watch_dirs: ["services/model_service/app"]
+  
+  # Debug settings
+  debug: true
+  profiling: false
+  
+  # Test settings
+  test:
+    coverage_threshold: 80
+    parallel: true
+    timeout: 300
+
+# Production settings
+production:
+  # Performance settings
+  performance:
+    workers: 4
+    worker_class: "uvicorn.workers.UvicornWorker"
+    max_requests: 1000
+    max_requests_jitter: 100
+  
+  # Security settings
+  security:
+    cors:
+      allow_origins: ["https://yourdomain.com"]
+      allow_credentials: true
+      allow_methods: ["GET", "POST"]
+      allow_headers: ["*"]
+  
+  # Monitoring settings
+  monitoring:
+    enabled: true
+    metrics_interval: 30
+    health_check_interval: 10

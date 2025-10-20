@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "autoops.fullname" . }}-model-service
+  labels:
+    {{- include "autoops.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-service
+spec:
+  type: {{ .Values.modelService.service.type }}
+  ports:
+    - port: {{ .Values.modelService.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "autoops.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: model-service

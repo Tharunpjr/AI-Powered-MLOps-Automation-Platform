@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "autoops.fullname" . }}-model-service
+  labels:
+    {{- include "autoops.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-service
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.modelService.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "autoops.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: model-service
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "autoops.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: model-service
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: model-service
+          image: "{{ .Values.global.imageRegistry }}{{ .Values.modelService.image.repository }}:{{ .Values.modelService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.modelService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.modelService.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.modelService.resources | nindent 12 }}
+          {{- if .Values.modelService.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.modelService.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.modelService.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.modelService.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
+              readOnly: true
+      volumes:
+        - name: model-storage
+          persistentVolumeClaim:
+            claimName: {{ include "autoops.fullname" . }}-model-storage
+      {{- with .Values.modelService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.modelService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.modelService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

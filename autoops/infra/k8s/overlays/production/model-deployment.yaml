@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service
+  namespace: autoops
+  labels:
+    app: model-service
+    app.kubernetes.io/name: model-service
+    app.kubernetes.io/part-of: autoops
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: model-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: model-service
+        version: v1
+    spec:
+      containers:
+      - name: model-service
+        image: autoops/model-service:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: MODEL_PATH
+          value: "/app/models/model.pkl"
+        - name: LOG_LEVEL
+          value: "INFO"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+          readOnly: true
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+      imagePullSecrets:
+      - name: registry-secret
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-storage-pvc
+  namespace: autoops
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-secret
+  namespace: autoops
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: ""  # Base64 encoded docker config

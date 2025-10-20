@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: autoops-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python production_backend.py
+    envVars:
+      - key: GEMINI_API_KEY
+        value: AIzaSyBFlzrCZDE4vbDF6K5uE3-BkaxzM3N5_nM
+      - key: DATABASE_URL
+        value: sqlite:///./autoops.db
+      - key: PORT
+        value: 8002
+    healthCheckPath: /health

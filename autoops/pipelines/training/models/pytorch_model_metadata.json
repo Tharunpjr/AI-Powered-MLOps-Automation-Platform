@@ -1,0 +1,39 @@
+{
+  "version": "v1.0.20251020_041445",
+  "model_type": "PyTorch",
+  "training_timestamp": "2025-10-20T04:14:45.640108",
+  "metrics": {
+    "mse": 0.2989051795771398,
+    "rmse": 0.5467222142707755,
+    "mae": 0.28930726084947733,
+    "r2": 0.962485471950705
+  },
+  "training_config": {
+    "input_size": 4,
+    "hidden_sizes": [
+      64,
+      32
+    ],
+    "output_size": 1,
+    "epochs": 100,
+    "batch_size": 32,
+    "learning_rate": 0.001
+  },
+  "final_train_loss": 0.7660558277910406,
+  "final_val_loss": 0.23330503143370152,
+  "saved_at": "2025-10-20T04:14:45.730436",
+  "model_class": "SimpleNeuralNet",
+  "model_path": "models\\pytorch_model.pt",
+  "device": "cpu",
+  "model_config": {
+    "input_size": 4,
+    "hidden_sizes": [
+      64,
+      32
+    ],
+    "output_size": 1,
+    "epochs": 100,
+    "batch_size": 32,
+    "learning_rate": 0.001
+  }
+}
