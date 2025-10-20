@@ -1,0 +1,6 @@
+{"ts":"2025-10-18T23:01","service":"trainer","level":"INFO","msg":"TRAIN epoch=1 loss=0.12"}
+{"ts":"2025-10-18T23:05","service":"datasource","level":"WARN","msg":"sensor-x missing_values=125"}
+{"ts":"2025-10-18T23:20","service":"eval","level":"ERROR","msg":"val_accuracy=0.82"}
+{"ts":"2025-10-19T00:12","service":"trainer","level":"INFO","msg":"TRAIN epoch=2 loss=0.35"}
+{"ts":"2025-10-19T01:00","service":"datasource","level":"INFO","msg":"new batch of 1000 records received"}
+{"ts":"2025-10-19T02:00","service":"monitor","level":"WARN","msg":"drift_score=0.45 feature=temperature"}
