@@ -5,8 +5,8 @@ services:
     plan: free
     buildCommand: |
       pip install --upgrade pip
-      pip install -r requirements_minimal.txt
-    startCommand: python production_backend_minimal.py
+      pip install -r requirements.txt
+    startCommand: python production_backend_simple.py
     envVars:
       - key: GEMINI_API_KEY
         value: AIzaSyBFlzrCZDE4vbDF6K5uE3-BkaxzM3N5_nM
